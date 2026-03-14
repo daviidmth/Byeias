@@ -33,19 +33,29 @@ class MultiTaskDeberta(nn.Module):
         self.sexism_head = nn.Linear(hidden_size, sexism_num_labels)
         self.racism_head = nn.Linear(hidden_size, racism_num_labels)
 
+
     def forward(
         self,
         input_ids: torch.Tensor,
         attention_mask: torch.Tensor,
         token_type_ids: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
+        # Erzwinge float32 für alle Inputs und Modell
+        input_ids = input_ids.to(dtype=torch.long)
+        attention_mask = attention_mask.to(dtype=torch.long)
+        if token_type_ids is not None:
+            token_type_ids = token_type_ids.to(dtype=torch.long)
+        self.encoder = self.encoder.to(dtype=torch.float32)
+        self.sexism_head = self.sexism_head.to(dtype=torch.float32)
+        self.racism_head = self.racism_head.to(dtype=torch.float32)
+
         outputs = self.encoder(
             input_ids=input_ids,
             attention_mask=attention_mask,
             token_type_ids=token_type_ids,
         )
         # Extract [CLS] token representation
-        pooled_output = outputs.last_hidden_state[:, 0, :]
+        pooled_output = outputs.last_hidden_state[:, 0, :].to(dtype=torch.float32)
         pooled_output = self.dropout(pooled_output)
 
         sexism_logits = self.sexism_head(pooled_output)

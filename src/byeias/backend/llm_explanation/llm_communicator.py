@@ -44,8 +44,10 @@ class LLMCommunicator:
         )
         self.system_prompt = system_prompt or self._load_system_prompt()
 
+        # Korrektur: Berücksichtigt alle Prioritäten (Argument -> Env-Var -> Config)
         resolved_api_key = api_key or os.getenv("MISTRAL_API_KEY") or LLM_CONFIG.api_key
-        if not resolved_api_key:
+        
+        if not resolved_api_key or resolved_api_key == "...":
             raise ValueError(
                 "Missing API key. Set MISTRAL_API_KEY or backend.llm.api_key in config.yaml."
             )
