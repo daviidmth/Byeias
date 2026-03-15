@@ -1,3 +1,4 @@
+import logging
 import re
 import sys
 from pathlib import Path
@@ -21,7 +22,11 @@ _add_src_to_path()
 from byeias.backend.classification.model_bias import BiasDetectionPipeline
 from byeias.backend.extraction.text_extracter import PDFTextExtractor
 from byeias.backend.llm_explanation.llm_communicator import LLMCommunicator
-from byeias.backend.config_loader import get_backend_config
+from byeias.backend.config_loader import get_backend_config, get_logger  # noqa: E402
+
+BACKEND_CONFIG = get_backend_config()
+logger = get_logger("byeias.llm_communicator", BACKEND_CONFIG)
+
 
 class BackendController:
     """
@@ -43,10 +48,10 @@ class BackendController:
         raw_sentences = re.split(r'(?<=[.!?])\s+', input_text.strip())
         sentences = [s.strip() for s in raw_sentences if s.strip()]
 
-        print(f"Eingabetext in {len(sentences)} Sätze aufgeteilt.")
+        logger.info(f"Eingabetext in {len(sentences)} Sätze aufgeteilt.")
 
         if not sentences:
-            print("Keine Sätze zum Verarbeiten gefunden.")
+            logger.warning("Keine Sätze zum Verarbeiten gefunden.")
             return []
 
         pipeline = self.classifier
@@ -71,7 +76,7 @@ class BackendController:
             contexts_before.append(before)
             contexts_after.append(after)
 
-        print("Starte Vorhersage für alle Sätze...")
+        logger.info("Starte Vorhersage für alle Sätze...")
         inference_results = pipeline.predict(
             context_texts=context_texts, 
             target_texts=target_texts
@@ -81,7 +86,7 @@ class BackendController:
 
         for i, result in enumerate(inference_results):
             if result["sexism_prediction"] == 1 or result["racism_prediction"] == 1:
-                print(f"\n[BIAS GEFUNDEN] in Satz {i+1}: '{result['text']}'")
+                logger.info(f"\n[BIAS GEFUNDEN] in Satz {i+1}: '{result['text']}'")
                 
                 explanation = llm.explain_bias(
                     context_before=contexts_before[i],
