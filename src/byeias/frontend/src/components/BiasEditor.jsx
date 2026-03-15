@@ -1,31 +1,19 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 
-const DEFAULT_TEXT =
-  'The experienced chief surgeon successfully performed the complex operation. The nurse helped him and handed over the instruments. After three hours, the procedure was completed.\n\nThe chairman decided he would lead the project.';
-
-// API-Call für Bias Detection (Klassifikation)
-async function fetchBiasPredictions(contexts, texts) {
-  const response = await fetch('http://localhost:8000/predict', {
+async function fetchProcessData(inputText) {
+  const response = await fetch('http://localhost:8000/process_text', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ context_texts: contexts, target_texts: texts }),
+    body: JSON.stringify({ input_text: inputText }),
   });
+  
+  if (!response.ok) {
+    throw new Error('Fehler beim Abrufen der Daten vom Server');
+  }
   return response.json();
 }
 
-// API-Call für LLM-Explanation
-async function fetchLLMExplanation(context_before, flagged_sentence, context_after) {
-  const response = await fetch('http://localhost:8000/explain', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ context_before, flagged_sentence, context_after }),
-  });
-  return response.json();
-}
-
-// Hilfsfunktion: Finde alle Vorkommen von Problemtexten und markiere sie
 const buildHighlightedSegments = (text, findings) => {
   const activeFindings = findings.filter((finding) => !finding.accepted);
   if (activeFindings.length === 0) {
@@ -51,12 +39,12 @@ const buildHighlightedSegments = (text, findings) => {
 };
 
 export default function BiasEditor() {
-  const [inputText, setInputText] = useState(DEFAULT_TEXT);
+  const [inputText, setInputText] = useState('');
   const [processedText, setProcessedText] = useState('');
-  const [findings, setFindings] = useState([]); // [{problematicText, biasType, explanation, rewriteSuggestion, accepted}]
+  const [findings, setFindings] = useState([]);
   const [analysisDone, setAnalysisDone] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [activeHoverId, setActiveHoverId] = useState(null);
-  const [lastFixedId, setLastFixedId] = useState(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
 
   const openTimeoutRef = useRef(null);
@@ -70,7 +58,7 @@ export default function BiasEditor() {
 
   const updateHoverPosition = (event) => {
     const tooltipWidth = 380;
-    const tooltipHeight = 240;
+    const tooltipHeight = 150; // Höhe etwas reduziert, da der Vorschlag fehlt
     const viewportPadding = 16;
 
     let nextX = event.clientX + 12;
@@ -92,17 +80,11 @@ export default function BiasEditor() {
 
   const handleHoverStart = (findingId, event) => {
     const isSameOpenFinding = activeHoverId === findingId;
-
     if (event && !isSameOpenFinding) {
       updateHoverPosition(event);
     }
-
     clearHoverTimeouts();
-
-    if (isSameOpenFinding) {
-      return;
-    }
-
+    if (isSameOpenFinding) return;
     openTimeoutRef.current = setTimeout(() => {
       setActiveHoverId(findingId);
     }, 90);
@@ -113,69 +95,46 @@ export default function BiasEditor() {
     setActiveHoverId(null);
   };
 
-  // Analyse-Logik: Text an Backend schicken, Findings setzen
   const processText = async () => {
     const trimmed = inputText.trim();
-    const baseText = trimmed.length > 0 ? inputText : '';
-    setProcessedText(baseText);
+    if (!trimmed) return;
+    
+    setProcessedText(trimmed);
     setFindings([]);
     setAnalysisDone(false);
+    setIsProcessing(true);
     setActiveHoverId(null);
-    setLastFixedId(null);
 
-    // Beispiel: Sätze splitten (hier sehr einfach, besser: Backend)
-    const sentences = baseText.split(/(?<=[.!?])\s+/);
-    let findingsArr = [];
-    for (let i = 0; i < sentences.length; i++) {
-      const sentence = sentences[i];
-      // Kontext: vorheriger Satz, nachfolgender Satz
-      const context_before = i > 0 ? sentences[i - 1] : '';
-      const context_after = i < sentences.length - 1 ? sentences[i + 1] : '';
-      // LLM-API aufrufen
-      try {
-        const result = await fetchLLMExplanation(context_before, sentence, context_after);
-        if (result && result.bias_type && result.bias_type !== "") {
-          findingsArr.push({
-            id: `bias-${i}`,
-            problematicText: sentence,
-            biasType: result.bias_type,
-            explanation: result.explanation,
-            rewriteSuggestion: result.rewrite_suggestion,
+    try {
+      const data = await fetchProcessData(trimmed);
+      
+      if (data.findings && data.findings.length > 0) {
+        const mappedFindings = data.findings.map((item, index) => {
+          const llmDict = typeof item.llm_erklaerung === 'string' 
+            ? JSON.parse(item.llm_erklaerung.replace(/'/g, '"')) 
+            : item.llm_erklaerung;
+
+          return {
+            id: `bias-${index}`,
+            problematicText: item.geflaggter_satz,
+            biasType: llmDict.bias_type || item.bias_typ, 
+            explanation: llmDict.explanation || "Keine Erklärung verfügbar.",
             accepted: false,
-          });
-        }
-      } catch (e) {
-        // Fehler ignorieren, Satz überspringen
+          };
+        });
+        setFindings(mappedFindings);
       }
+    } catch (e) {
+      console.error("Fehler beim Verarbeiten des Textes:", e);
+      alert("Fehler bei der Verbindung zum Backend. Läuft der Server?");
+    } finally {
+      setIsProcessing(false);
+      setAnalysisDone(true);
     }
-    setFindings(findingsArr);
-    setAnalysisDone(true);
-  };
-
-  const handleAcceptSuggestion = (findingId) => {
-    const selectedFinding = findings.find((finding) => finding.id === findingId);
-    if (!selectedFinding) {
-      return;
-    }
-
-    setProcessedText((currentText) =>
-      currentText.replace(selectedFinding.problematicText, selectedFinding.rewriteSuggestion)
-    );
-
-    setFindings((currentFindings) =>
-      currentFindings.map((finding) =>
-        finding.id === findingId ? { ...finding, accepted: true } : finding
-      )
-    );
-
-    setActiveHoverId(null);
-    setLastFixedId(findingId);
   };
 
   useEffect(() => {
-    return () => {
-      clearHoverTimeouts();
-    };
+    return () => clearHoverTimeouts();
   }, []);
 
   const highlightedSegments = buildHighlightedSegments(processedText, findings);
@@ -188,9 +147,6 @@ export default function BiasEditor() {
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl md:p-10">
           <div className="mb-6 flex items-center justify-between">
             <h1 className="text-lg font-semibold text-slate-900">Bias Scanner</h1>
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
-              Mock Prototype
-            </span>
           </div>
 
           <div className="space-y-5">
@@ -202,8 +158,8 @@ export default function BiasEditor() {
                 id="bias-input"
                 value={inputText}
                 onChange={(event) => setInputText(event.target.value)}
-                placeholder="Paste or write your text here..."
-                className="min-h-[180px] w-full rounded-xl border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-800 shadow-sm outline-none transition focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
+                placeholder="Hier den Text reinkopieren..."
+                className="min-h-[180px] w-full rounded-xl border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-800 placeholder:text-slate-400 shadow-sm outline-none transition focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
               />
             </div>
 
@@ -211,9 +167,12 @@ export default function BiasEditor() {
               <button
                 type="button"
                 onClick={processText}
-                className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                disabled={isProcessing}
+                className={`inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                  isProcessing ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                }`}
               >
-                Process
+                {isProcessing ? 'Processing...' : 'Process'}
               </button>
             </div>
 
@@ -258,7 +217,7 @@ export default function BiasEditor() {
                     onMouseLeave={closePopover}
                   >
                     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
-                      <div className="mb-3 flex items-start gap-2">
+                      <div className="flex items-start gap-2">
                         <div className="mt-0.5 rounded-md bg-amber-100 p-1 text-amber-700">
                           <AlertTriangle size={14} />
                         </div>
@@ -271,27 +230,6 @@ export default function BiasEditor() {
                           </p>
                         </div>
                       </div>
-
-                      {openFinding && (
-                        <>
-                          <div className="rounded-xl border border-green-200 bg-green-50 p-3">
-                            <p className="text-sm text-slate-500 line-through">
-                              {openFinding.problematicText}
-                            </p>
-                            <p className="mt-2 text-sm font-medium text-green-800">
-                              {openFinding.rewriteSuggestion}
-                            </p>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleAcceptSuggestion(openFinding.id)}
-                            className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                          >
-                            Accept Suggestion
-                          </button>
-                        </>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -299,16 +237,9 @@ export default function BiasEditor() {
                 {!hasActiveFinding && processedText.trim().length > 0 && (
                   <div className="mt-4 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
                     <CheckCircle2 size={16} />
-                    <span>No active mocked bias issues found.</span>
+                    <span>No active bias issues found.</span>
                   </div>
                 )}
-              </div>
-            )}
-
-            {lastFixedId && (
-              <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
-                <CheckCircle2 size={16} />
-                <span>Suggestion applied successfully.</span>
               </div>
             )}
           </div>

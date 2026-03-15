@@ -331,3 +331,60 @@
 2026-03-15 09:35:02 [INFO] byeias.llm_communicator - Requesting LLM explanation
 2026-03-15 09:35:04 [INFO] byeias.llm_communicator - Requesting LLM explanation
 2026-03-15 09:35:06 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:42:36 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:42:45 [INFO] byeias.bias_model - Inference started | samples=5
+2026-03-15 09:42:46 [INFO] byeias.bias_model - Inference completed | samples=5
+2026-03-15 09:42:54 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:42:57 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:42:57 [INFO] byeias.bias_model - Inference started | samples=4
+2026-03-15 09:42:57 [INFO] byeias.bias_model - Inference completed | samples=4
+2026-03-15 09:42:57 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:43:00 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:43:02 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:43:06 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:47:17 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:47:20 [INFO] byeias.text_extractor - PDF text extractor initialized | language=german
+2026-03-15 09:47:20 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:47:43 [INFO] byeias.bias_model - Inference started | samples=8
+2026-03-15 09:47:44 [INFO] byeias.bias_model - Inference completed | samples=8
+2026-03-15 09:47:44 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:47:46 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:47:48 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:47:50 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:47:53 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:47:55 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:47:57 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:48:00 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:49:38 [INFO] byeias.bias_model - Inference started | samples=8
+2026-03-15 09:49:38 [INFO] byeias.bias_model - Inference completed | samples=8
+2026-03-15 09:49:38 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:49:41 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:49:43 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:49:45 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:49:48 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:49:51 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:49:54 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:49:57 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:50:17 [INFO] byeias.bias_model - Inference started | samples=4
+2026-03-15 09:50:17 [INFO] byeias.bias_model - Inference completed | samples=4
+2026-03-15 09:50:17 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:50:20 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:50:22 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:50:24 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:51:03 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:51:05 [INFO] byeias.text_extractor - PDF text extractor initialized | language=german
+2026-03-15 09:51:06 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:52:01 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:52:03 [INFO] byeias.text_extractor - PDF text extractor initialized | language=german
+2026-03-15 09:52:04 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:52:06 [INFO] byeias.bias_model - Inference started | samples=4
+2026-03-15 09:52:07 [INFO] byeias.bias_model - Inference completed | samples=4
+2026-03-15 09:52:07 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:52:09 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:52:11 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:52:13 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:52:24 [INFO] byeias.bias_model - Inference started | samples=4
+2026-03-15 09:52:24 [INFO] byeias.bias_model - Inference completed | samples=4
+2026-03-15 09:52:24 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:52:26 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:52:28 [INFO] byeias.llm_communicator - Requesting LLM explanation

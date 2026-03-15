@@ -49,6 +49,7 @@ Edit the `configs/config.yaml` file and insert your Mistral API Key at `model.mi
 ### 3. Start the Backend API
 
 ```bash
+cd src
 poetry run uvicorn byeias.backend.api:app --reload
 ```
 
@@ -57,7 +58,8 @@ The API runs at **http://localhost:8000** · Swagger docs at **http://localhost:
 ### 4. Start the Streamlit Frontend (new terminal)
 
 ```bash
-poetry run streamlit run app.py
+cd src\byeias\frontend
+npm run dev
 ```
 
 Opens at **http://localhost:8501**

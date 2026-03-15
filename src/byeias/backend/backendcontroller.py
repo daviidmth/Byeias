@@ -4,8 +4,6 @@ from pathlib import Path
 
 
 def _add_src_to_path():
-    from pathlib import Path
-    import sys
     cwd = Path.cwd().resolve()
     candidates = [cwd, *cwd.parents]
     for candidate in candidates:
@@ -23,7 +21,6 @@ _add_src_to_path()
 from byeias.backend.classification.model_bias import BiasDetectionPipeline
 from byeias.backend.extraction.text_extracter import PDFTextExtractor
 from byeias.backend.llm_explanation.llm_communicator import LLMCommunicator
-from byeias.backend.classification.model_bias import BiasDetectionPipeline
 from byeias.backend.config_loader import get_backend_config
 
 class BackendController:
@@ -32,10 +29,14 @@ class BackendController:
     """
 
     def __init__(self, model_name=None, device=None, llm_model=None, llm_api_key=None):
-        self.classifier = BiasDetectionPipeline(model_name=model_name, device=device)
+        self.config = get_backend_config()
+        # Initialisierung erfolgt nur einmal beim Server-Start
+        self.classifier = BiasDetectionPipeline(
+            model_name=model_name or self.config.classification.model_name, 
+            device=device
+        )
         self.pdf_extractor = PDFTextExtractor(language="german")
         self.llm = LLMCommunicator(model_name=llm_model, api_key=llm_api_key)
-        self.config = get_backend_config()
 
 
     def process_data(self, input_text):
@@ -48,8 +49,8 @@ class BackendController:
             print("Keine Sätze zum Verarbeiten gefunden.")
             return []
 
-        pipeline = BiasDetectionPipeline(model_name=self.config.classification.model_name)
-        llm = LLMCommunicator()
+        pipeline = self.classifier
+        llm = self.llm
 
         context_texts = []
         target_texts = []
@@ -60,7 +61,6 @@ class BackendController:
             target = sentences[i]
             
             before = sentences[i-1] if i > 0 else ""
-            
             after = sentences[i+1] if i + 1 < len(sentences) else ""
             
             combined_context = f"{before} {after}".strip()
@@ -76,8 +76,6 @@ class BackendController:
             context_texts=context_texts, 
             target_texts=target_texts
         )
-
-        print("Inferenz-Ergebnisse:", inference_results)
 
         explanations = []
 
@@ -116,14 +114,3 @@ class BackendController:
     # --- LLM-Kommunikation ---
     def explain_bias(self, context_before, flagged_sentence, context_after):
         return self.llm.explain_bias(context_before, flagged_sentence, context_after)
-
-
-if __name__ == "__main__":
-    text = "The Topic is about payment. Girls get paid less. The teacher explained the next task. Everyone was listening."
-    ergebnisse = BackendController().process_data(text)
-
-
-    print("\n--- FINALE ZUSAMMENFASSUNG ---")
-    for erg in ergebnisse:
-        print(f"Satz {erg['satz_index']} ({erg['bias_typ']}): {erg['geflaggter_satz']}")
-        print(f"Erklärung: {erg['llm_erklaerung']}\n")

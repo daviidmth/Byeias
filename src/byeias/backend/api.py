@@ -17,6 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Lädt das Modell EINMAL in den Speicher beim Start der API
 backend = BackendController()
 
 
@@ -31,6 +32,10 @@ class ExplainRequest(BaseModel):
     context_after: str
 
 
+class ProcessDataRequest(BaseModel):
+    input_text: str
+
+
 @app.post("/predict")
 def predict_bias(request: PredictRequest):
     result = backend.predict_bias(request.context_texts, request.target_texts)
@@ -43,6 +48,12 @@ def explain_bias(request: ExplainRequest):
         request.context_before, request.flagged_sentence, request.context_after
     )
     return result
+
+
+@app.post("/process_text")
+def process_text(request: ProcessDataRequest):
+    results = backend.process_data(request.input_text)
+    return {"findings": results}
 
 
 @app.post("/extract_pdf")
