@@ -1,8 +1,8 @@
 
-![Logo](data/pictures/logo.png) 
+![Logo](data/pictures/logo_new.png) 
 
 The MVP is made of an backend and frontend which can be started through an Docker Container. Since you dont have the time to run the MVP the following will give you a qucik overview of the MVP.
-
+s
 ## Frontend
 
 THe following pitures show how the frontend of the mvp looks like and shows all the functions.
