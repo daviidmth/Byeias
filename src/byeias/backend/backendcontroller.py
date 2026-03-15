@@ -1,7 +1,30 @@
+import re
+import sys
+from pathlib import Path
+
+
+def _add_src_to_path():
+    from pathlib import Path
+    import sys
+    cwd = Path.cwd().resolve()
+    candidates = [cwd, *cwd.parents]
+    for candidate in candidates:
+        src_path = candidate / "src"
+        package_path = src_path / "byeias"
+        if package_path.exists():
+            src_str = str(src_path)
+            if src_str not in sys.path:
+                sys.path.insert(0, src_str)
+            return src_path
+    raise RuntimeError("Could not find 'src' directory in current or parent paths. Ensure you are running this script from within the project directory structure.")
+_add_src_to_path()
+
+
 from byeias.backend.classification.model_bias import BiasDetectionPipeline
 from byeias.backend.extraction.text_extracter import PDFTextExtractor
 from byeias.backend.llm_explanation.llm_communicator import LLMCommunicator
-
+from byeias.backend.classification.model_bias import BiasDetectionPipeline
+from byeias.backend.config_loader import get_backend_config
 
 class BackendController:
     """
@@ -9,31 +32,73 @@ class BackendController:
     """
 
     def __init__(self, model_name=None, device=None, llm_model=None, llm_api_key=None):
-        # Klassifikations-Pipeline
         self.classifier = BiasDetectionPipeline(model_name=model_name, device=device)
-        # PDF-Extraktion
         self.pdf_extractor = PDFTextExtractor(language="german")
-        # LLM-Kommunikation
         self.llm = LLMCommunicator(model_name=llm_model, api_key=llm_api_key)
+        self.config = get_backend_config()
+
 
     def process_data(self, input_text):
-        sentences = input_text.split(". ")
-        print("Eingabetext in Sätze aufgeteilt:", sentences)
+        raw_sentences = re.split(r'(?<=[.!?])\s+', input_text.strip())
+        sentences = [s.strip() for s in raw_sentences if s.strip()]
 
-        inference_results = self.predict_bias(context_texts=sentences, target_texts=sentences)
-        explanations = [],
+        print(f"Eingabetext in {len(sentences)} Sätze aufgeteilt.")
+
+        if not sentences:
+            print("Keine Sätze zum Verarbeiten gefunden.")
+            return []
+
+        pipeline = BiasDetectionPipeline(model_name=self.config.classification.model_name)
+        llm = LLMCommunicator()
+
+        context_texts = []
+        target_texts = []
+        contexts_before = []
+        contexts_after = []
+
+        for i in range(len(sentences)):
+            target = sentences[i]
+            
+            before = sentences[i-1] if i > 0 else ""
+            
+            after = sentences[i+1] if i + 1 < len(sentences) else ""
+            
+            combined_context = f"{before} {after}".strip()
+            
+            target_texts.append(target)
+            context_texts.append(combined_context)
+            
+            contexts_before.append(before)
+            contexts_after.append(after)
+
+        print("Starte Vorhersage für alle Sätze...")
+        inference_results = pipeline.predict(
+            context_texts=context_texts, 
+            target_texts=target_texts
+        )
+
         print("Inferenz-Ergebnisse:", inference_results)
 
-        for result in inference_results:
-            if result["is_biased"]:
-                explanation = self.explain_bias(
-                    context_before=result["context_before"],
-                    flagged_sentence=result["target_text"],
-                    context_after=result["context_after"],
-                )
-                explanations.append(explanation)
-        return explanations
+        explanations = []
 
+        for i, result in enumerate(inference_results):
+            if result["sexism_prediction"] == 1 or result["racism_prediction"] == 1:
+                print(f"\n[BIAS GEFUNDEN] in Satz {i+1}: '{result['text']}'")
+                
+                explanation = llm.explain_bias(
+                    context_before=contexts_before[i],
+                    flagged_sentence=result["text"],
+                    context_after=contexts_after[i],
+                )
+                
+                explanations.append({
+                    "satz_index": i + 1,
+                    "geflaggter_satz": result["text"],
+                    "bias_typ": "Sexismus" if result["sexism_prediction"] == 1 else "Rassismus",
+                    "llm_erklaerung": explanation
+                })
+
+        return explanations
 
     # --- Klassifikation ---
     def train_classifier(self, **kwargs):
@@ -54,12 +119,11 @@ class BackendController:
 
 
 if __name__ == "__main__":
-    process_data = BackendController()
-    input_text = "Die Ärztin hat die Patientin untersucht. Der Ingenieur hat das Problem gelöst."
-    explanations = process_data.process_data(input_text)
-    for idx, explanation in enumerate(explanations):
-        print(f"Erklärung {idx+1}:")
-        print("Bias-Typ:", explanation.get("bias_type", "-"))
-        print("Erklärung:", explanation.get("explanation", "-"))
-        print("Umschreibvorschlag:", explanation.get("rewrite_suggestion", "-"))
-        print("-" * 40)
+    text = "The Topic is about payment. Girls get paid less. The teacher explained the next task. Everyone was listening."
+    ergebnisse = BackendController().process_data(text)
+
+
+    print("\n--- FINALE ZUSAMMENFASSUNG ---")
+    for erg in ergebnisse:
+        print(f"Satz {erg['satz_index']} ({erg['bias_typ']}): {erg['geflaggter_satz']}")
+        print(f"Erklärung: {erg['llm_erklaerung']}\n")

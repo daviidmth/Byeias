@@ -267,3 +267,67 @@
 2026-03-15 08:57:49 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
 2026-03-15 08:57:53 [INFO] byeias.bias_model - Inference started | samples=5
 2026-03-15 08:57:54 [INFO] byeias.bias_model - Inference completed | samples=5
+2026-03-15 09:07:42 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:07:45 [INFO] byeias.bias_model - Inference started | samples=1
+2026-03-15 09:07:45 [INFO] byeias.bias_model - Inference completed | samples=1
+2026-03-15 09:09:31 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:09:33 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:09:33 [INFO] byeias.bias_model - Inference started | samples=1
+2026-03-15 09:09:33 [INFO] byeias.bias_model - Inference completed | samples=1
+2026-03-15 09:09:47 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:09:50 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:09:50 [INFO] byeias.bias_model - Inference started | samples=1
+2026-03-15 09:09:50 [INFO] byeias.bias_model - Inference completed | samples=1
+2026-03-15 09:10:05 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:10:07 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:10:07 [INFO] byeias.bias_model - Inference started | samples=1
+2026-03-15 09:10:07 [INFO] byeias.bias_model - Inference completed | samples=1
+2026-03-15 09:10:48 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:10:52 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:10:52 [INFO] byeias.bias_model - Inference started | samples=2
+2026-03-15 09:10:52 [INFO] byeias.bias_model - Inference completed | samples=2
+2026-03-15 09:13:37 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:13:41 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:13:41 [INFO] byeias.bias_model - Inference started | samples=1
+2026-03-15 09:13:41 [INFO] byeias.bias_model - Inference completed | samples=1
+2026-03-15 09:13:41 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:14:00 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:14:02 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:14:02 [INFO] byeias.bias_model - Inference started | samples=1
+2026-03-15 09:14:03 [INFO] byeias.bias_model - Inference completed | samples=1
+2026-03-15 09:14:22 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:14:25 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:14:25 [INFO] byeias.bias_model - Inference started | samples=1
+2026-03-15 09:14:25 [INFO] byeias.bias_model - Inference completed | samples=1
+2026-03-15 09:14:25 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:19:04 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:19:06 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:19:06 [INFO] byeias.bias_model - Inference started | samples=4
+2026-03-15 09:19:07 [INFO] byeias.bias_model - Inference completed | samples=4
+2026-03-15 09:19:07 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:19:09 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:19:12 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:19:13 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:27:01 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:27:03 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:27:03 [INFO] byeias.bias_model - Inference started | samples=4
+2026-03-15 09:27:04 [INFO] byeias.bias_model - Inference completed | samples=4
+2026-03-15 09:27:15 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:27:17 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:27:17 [INFO] byeias.bias_model - Inference started | samples=4
+2026-03-15 09:27:17 [INFO] byeias.bias_model - Inference completed | samples=4
+2026-03-15 09:27:17 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:27:20 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:27:22 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:27:24 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:34:54 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:34:56 [INFO] byeias.text_extractor - PDF text extractor initialized | language=german
+2026-03-15 09:34:57 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:34:57 [INFO] byeias.bias_model - Pipeline initialized | device=cpu model=roberta-base max_length=256
+2026-03-15 09:35:00 [INFO] byeias.llm_communicator - LLM communicator initialized | model=mistral-large-latest max_tokens=1000 temperature=0.70
+2026-03-15 09:35:00 [INFO] byeias.bias_model - Inference started | samples=4
+2026-03-15 09:35:00 [INFO] byeias.bias_model - Inference completed | samples=4
+2026-03-15 09:35:00 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:35:02 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:35:04 [INFO] byeias.llm_communicator - Requesting LLM explanation
+2026-03-15 09:35:06 [INFO] byeias.llm_communicator - Requesting LLM explanation
