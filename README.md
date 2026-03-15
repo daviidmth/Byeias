@@ -28,4 +28,3 @@ The following picture shows the pipeline which is implemented in the mvp. It is 
 1. **Text processing module:** Extracts text from the input pdf, or receive the direct input text.
 2. **Bert classifier:** Detects Bias and categorizes between racism and sexism.
 3. **Mistral LLM:** The detect biases will be explained, why it is an bias and whats the problem with it.
-
